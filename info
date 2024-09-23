@@ -1,0 +1,92 @@
+// import React, { useState } from 'react';
+// import { Link } from "react-router-dom";
+// import SubmitButton from "./SumbitButton";
+// import { useDispatch, useSelector } from 'react-redux';
+// import axios, { all } from 'axios';
+// import { loadClient } from '../redux/actions/clientAcction';
+
+// const LoansForm = () => {
+
+//   const client = useSelector((store) => store.clientReducer.client);
+//   const [loansType, setLoansType] = useState([])
+//   const [loanSelected, setLoansSelected] = useState("")
+//   const dispatch = useDispatch()
+
+
+
+//   function getAllLoans() {
+//     axios
+//       .get('http://localhost:8080/api/loans/all/')
+//       .then((response) => {
+//         const loans = response.data;
+//         setLoansType(loans);
+//       })
+//       .catch((error) => {
+//         console.error('Error fetching loans:', error);
+//       });
+//   }
+
+
+//   useEffect(() => {
+//     if (!client.firstName) {
+//       getAllLoans();
+//       dispatch(loadClient());
+//     }
+//   }, [client.firstName, dispatch]);
+
+
+//   return (
+//     <div className="w-[50%] px-[20px] bg-[#93ABBF] pt-[20px]">
+//     //   <h2 className="text-2xl font-bold text-gray-800 mb-4">Select Loan</h2>
+//     //   <form className="flex flex-col gap-[20px] px-[30px]">
+
+//     //     <div className="flex flex-col">
+//     //       <label htmlFor="loanType" className="font-semibold text-gray-700">Loan Type</label>
+//     //       <select
+//     //         id="loanType"
+//     //         value={loanType}
+//     //         onChange={handleLoanTypeChange}
+//     //         className="mt-1 w-full rounded-lg border border-gray-300 py-2 px-3 text-gray-700 focus:ring-indigo-500 focus:border-indigo-500"
+//     //       >
+//     //         {Object.keys(loanOptions).map((type) => (
+//     //           <option key={type} value={type}>
+//     //             {type}
+//     //           </option>
+//     //         ))}
+//     //       </select>
+//     //     </div>
+
+//     //     <div className="flex flex-col">
+//     //       <label htmlFor="amount" className="font-semibold text-gray-700">Amount</label>
+//     //       <input
+//     //         type="number"
+//     //         id="amount"
+//     //         name="amount"
+//     //         max={maxAmount}
+//     //         placeholder={`Enter amount (max ${maxAmount})`}
+//     //         className="mt-1 w-full rounded-lg border border-gray-300 py-2 px-3 text-gray-700 focus:ring-indigo-500 focus:border-indigo-500"
+//     //       />
+//     //     </div>
+
+//     //     <div className="flex flex-col">
+//     //       <label htmlFor="payments" className="font-semibold text-gray-700">Payments</label>
+//     //       <select
+//     //         id="payments"
+//     //         name="payments"
+//     //         className="mt-1 w-full rounded-lg border border-gray-300 py-2 px-3 text-gray-700 focus:ring-indigo-500 focus:border-indigo-500"
+//     //       >
+//     //         {payments.map((payment) => (
+//     //           <option key={payment} value={payment}>
+//     //             {payment} payments
+//     //           </option>
+//     //         ))}
+//     //       </select>
+//     //     </div>
+//     //     <SubmitButton text="Solicit Loan"/>
+
+//     //   </form>
+//      </div>
+//  );
+// };
+
+// export default LoansForm;
