@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -37,11 +37,25 @@ const SignUpForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!firstName || !lastName || !email || !password) {
-      setError("All fields are required.");
+    // Validaciones de campos vacíos
+    if (!firstName) {
+      setError("First name is required.");
+      return;
+    }
+    if (!lastName) {
+      setError("Last name is required.");
+      return;
+    }
+    if (!email) {
+      setError("Email is required.");
+      return;
+    }
+    if (!password) {
+      setError("Password is required.");
       return;
     }
 
+    // Validación de formato de email
     if (!isEmailValid(email)) {
       setError("Invalid email format.");
       return;
@@ -53,17 +67,20 @@ const SignUpForm = () => {
       firstName,
       lastName,
       email,
-      password
+      password,
     };
 
     try {
-      // Verificar los datos que se están enviando
       console.log(user);
 
-      const response = await axios.post("https://homebanking-22e4.onrender.com/api/auth/register", user);
+      // Hacer la petición POST a la API
+      const response = await axios.post(
+        "https://homebanking-22e4.onrender.com/api/auth/register",
+        user
+      );
       console.log("Registration successful:", response.data);
 
-     navigate("/")
+      navigate("/"); // Redireccionar tras el éxito
       setShowSuccessModal(true);
 
       // Limpiar el formulario
@@ -72,8 +89,10 @@ const SignUpForm = () => {
       setEmail("");
       setPassword("");
     } catch (error) {
-      console.error("Error during registration:", error.response?.data || error.message);
-      setError(error.response?.data || error.message);
+      // Mostrar errores del backend
+      const backendError = error.response?.data?.message || "Registration failed. Please try again.";
+      console.error("Error during registration:", backendError);
+      setError(backendError); // Aquí mostramos el error del backend si existe
     } finally {
       setLoading(false);
     }
@@ -93,7 +112,6 @@ const SignUpForm = () => {
           value={firstName}
           onChange={handleFirstNameChange}
           className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
-
         />
 
         <label htmlFor="lastName">Last Name</label>
@@ -104,7 +122,6 @@ const SignUpForm = () => {
           value={lastName}
           onChange={handleLastNameChange}
           className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
-
         />
 
         <label htmlFor="email">Email</label>
@@ -115,7 +132,6 @@ const SignUpForm = () => {
           value={email}
           onChange={handleEmailChange}
           className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
-          required
         />
 
         <label htmlFor="password">Password</label>
@@ -126,7 +142,6 @@ const SignUpForm = () => {
           value={password}
           onChange={handlePasswordChange}
           className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
-          required
         />
 
         {error && <p className="text-red-500">{error}</p>}
