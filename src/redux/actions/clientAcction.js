@@ -6,7 +6,7 @@ export const loadClient = createAsyncThunk("loadClient", async (_, { rejectWithV
   const token = localStorage.getItem("token");
 
   try {
-    const response = await axios.get("https://homebanking-22e4.onrender.com/api/auth/current", {
+    const response = await axios.get("https://homebankingfront.onrender.com/api/auth/current", {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -27,7 +27,7 @@ export const solicitCard = createAsyncThunk("solicitCard", async (cardData, { re
 
   try {
     const response = await axios.post(
-      "https://homebanking-22e4.onrender.com/api/clients/current/cards",
+      "https://homebankingfront.onrender.com/api/clients/current/cards",
       cardData,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -45,7 +45,7 @@ export const solicitLoan = createAsyncThunk("solicitLoan", async (loanData, { re
 
   try {
     const response = await axios.post(
-      "https://homebanking-22e4.onrender.com/api/loans/",
+      "https://homebankingfront.onrender.com/api/loans/",
       loanData,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -64,7 +64,7 @@ export const createAccount = createAsyncThunk(
     const token = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        "https://homebanking-22e4.onrender.com/api/clients/current/accounts",
+        "https://homebankingfront.onrender.com/api/clients/current/accounts",
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -85,7 +85,7 @@ export const solicitTransaction = createAsyncThunk(
 
     try {
       const response = await axios.post(
-        "https://homebanking-22e4.onrender.com/api/transaction/",
+        "https://homebankingfront.onrender.com/api/transaction/",
         transactionData,
         {
           headers: { Authorization: `Bearer ${token}` },

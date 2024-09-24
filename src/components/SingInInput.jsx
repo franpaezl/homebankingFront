@@ -54,7 +54,7 @@ const SignInInput = () => {
 
   async function login(user) {
     try {
-      const response = await axios.post("https://homebanking-22e4.onrender.com/api/auth/login", user);
+      const response = await axios.post("https://homebankingfront.onrender.com/api/auth/login", user);
       const token = response.data;
 
       if (token) {

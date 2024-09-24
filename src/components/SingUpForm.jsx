@@ -75,7 +75,7 @@ const SignUpForm = () => {
 
       // Hacer la petición POST a la API
       const response = await axios.post(
-        "https://homebanking-22e4.onrender.com/api/auth/register",
+        "https://homebankingfront.onrender.com/api/auth/register",
         user
       );
       console.log("Registration successful:", response.data);
