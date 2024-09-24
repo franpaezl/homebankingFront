@@ -17,7 +17,7 @@ const TransactionsForms = () => {
     if (client.firstName === "") {
       dispatch(loadClient());
     }
-  }, [dispatch]);
+  }, [client]);
 
   function handleChange(event) {
     setDestinationType(event.target.value);

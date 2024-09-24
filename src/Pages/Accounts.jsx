@@ -13,7 +13,7 @@ const Accounts = () => {
       dispatch(loadClient());
 
     }
-  }, [dispatch]);
+  }, [client]);
 
   return (
     <div className="flex flex-col justify-center items-center pt-[20px]">

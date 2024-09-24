@@ -27,7 +27,7 @@ const LoansForm = () => {
 
     }
     getAllLoans()
-  }, [dispatch]);
+  }, [client]);
 
   const getAllLoans = async () => {
     setLoading(true);

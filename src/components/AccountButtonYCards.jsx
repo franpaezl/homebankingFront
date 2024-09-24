@@ -20,7 +20,7 @@ const AccountButtonYCards = () => {
       dispatch(loadClient());
 
     }
-  }, [dispatch]);
+  }, [client]);
 
   const handleCreateAccount = () => {
     if (accounts.length >= 3) {

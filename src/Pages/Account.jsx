@@ -20,7 +20,7 @@ const Account = () => {
       dispatch(loadClient());
 
     }
-  }, [dispatch]);
+  },[client]);
 
   const account = clientAccounts.find(acc => acc.id.toString() === id);
 

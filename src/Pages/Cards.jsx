@@ -18,7 +18,7 @@ const Cards = () => {
       dispatch(loadClient());
 
     }
-  }, [dispatch]);
+  }, [client]);
 
   useEffect(() => {
     if (client.cards) {

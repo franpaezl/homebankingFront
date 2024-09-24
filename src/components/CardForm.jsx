@@ -8,8 +8,7 @@ const CardForm = () => {
   const [loading, setLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // Manejo de error directo
   const client = useSelector((store) => store.clientReducer.client);
   const clientCards = client.cards || [];
   const dispatch = useDispatch();
@@ -23,16 +22,15 @@ const CardForm = () => {
     setLoading(true);
     try {
       await dispatch(solicitCard(cardRequested));
-      dispatch(loadClient())
+      dispatch(loadClient());
       setShowSuccessModal(true);
     } catch (error) {
-      console.error('Failed to submit card request:', error);
+      console.error("Failed to submit card request:", error);
       if (error.response && error.response.data) {
         setErrorMessage(error.response.data);
       } else {
         setErrorMessage("An unexpected error occurred.");
       }
-      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -40,34 +38,46 @@ const CardForm = () => {
 
   const handleCardTypeChange = (event) => {
     setCardType(event.target.value);
+    setErrorMessage(""); // Resetear el error al cambiar el valor
   };
 
   const handleCardColorChange = (event) => {
     setCardColor(event.target.value);
+    setErrorMessage(""); // Resetear el error al cambiar el valor
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Validaciones de campos vacíos
+    if (!cardType) {
+      setErrorMessage("Card type is required.");
+      return;
+    }
+    if (!cardColor) {
+      setErrorMessage("Card color is required.");
+      return;
+    }
+
     // Verifica si ya existe una tarjeta del mismo tipo y color
-    const exists = clientCards.some(card =>
-      card.type === cardType.toUpperCase() && card.color === cardColor.toUpperCase()
+    const exists = clientCards.some(
+      (card) =>
+        card.type === cardType.toUpperCase() &&
+        card.color === cardColor.toUpperCase()
     );
 
     if (exists) {
       setErrorMessage("You cannot have two cards of the same type and color.");
-      setShowErrorModal(true);
     } else {
       setShowConfirmModal(true);
     }
   };
 
   useEffect(() => {
-    if (client.firstName == "") {
+    if (client.firstName === "") {
       dispatch(loadClient());
-
     }
-  }, [dispatch]);
+  }, [client]);
 
   return (
     <div className="w-full h-full bg-[#93ABBF] flex">
@@ -84,7 +94,6 @@ const CardForm = () => {
           name="cardType"
           id="cardType"
           className="mt-1 w-[80%] rounded-md border border-gray-300 py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
-          required
           value={cardType}
           onChange={handleCardTypeChange}
         >
@@ -102,7 +111,6 @@ const CardForm = () => {
           name="color"
           id="color"
           className="mt-1 w-[80%] rounded-md border border-gray-300 py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 mb-4"
-          required
           value={cardColor}
           onChange={handleCardColorChange}
         >
@@ -114,12 +122,18 @@ const CardForm = () => {
           <option value="TITANIUM">Titanium</option>
         </select>
 
+        {/* Mostrar error */}
+        {errorMessage && (
+  <p className="text-red-500 font-extrabold">{errorMessage}</p>
+)}
+
+
         <button
           type="submit"
           disabled={loading}
           className="px-6 py-2 bg-[#023E73] text-white font-semibold rounded-lg shadow-md hover:bg-[#266288] focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
-          {loading ? 'Submitting...' : 'Submit Card Request'}
+          {loading ? "Submitting..." : "Submit Card Request"}
         </button>
       </form>
 
@@ -127,7 +141,9 @@ const CardForm = () => {
       {showConfirmModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl mb-4">Are you sure you want to request this card?</h2>
+            <h2 className="text-xl mb-4">
+              Are you sure you want to request this card?
+            </h2>
             <div className="flex justify-end">
               <button
                 onClick={() => {
@@ -158,23 +174,6 @@ const CardForm = () => {
               <button
                 onClick={() => setShowSuccessModal(false)}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Error Modal */}
-      {showErrorModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl mb-4">{errorMessage}</h2>
-            <div className="flex justify-end">
-              <button
-                onClick={() => setShowErrorModal(false)}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
               >
                 OK
               </button>
