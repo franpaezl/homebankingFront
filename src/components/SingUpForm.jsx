@@ -60,7 +60,7 @@ const SignUpForm = () => {
       // Verificar los datos que se están enviando
       console.log(user);
 
-      const response = await axios.post("http://localhost:8080/api/auth/register", user);
+      const response = await axios.post("https://homebanking-22e4.onrender.com/api/auth/register", user);
       console.log("Registration successful:", response.data);
 
      navigate("/")
