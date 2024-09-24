@@ -13,10 +13,10 @@ const Cards = () => {
 
   const [creditCard, setCreditCard] = useState([]);
   const [debitCard, setDebitCard] = useState([]);
-  useEffect(() => {
-    if (client.firstName == "") {
-      dispatch(loadClient());
 
+  useEffect(() => {
+    if (client.firstName === "") {
+      dispatch(loadClient());
     }
   }, [client]);
 
@@ -92,6 +92,7 @@ const Cards = () => {
                     thru={card.thruDate}
                     name={card.cardHolder}
                     color={styles} // Aplicar estilos de color y texto
+                    textColor={styles.textColor} // Pasar el color del texto
                   />
                 </div>
               );
@@ -117,6 +118,7 @@ const Cards = () => {
                     thru={card.thruDate}
                     name={card.cardHolder}
                     color={styles} // Aplicar estilos de color y texto
+                    textColor={styles.textColor} // Pasar el color del texto
                   />
                 </div>
               );
