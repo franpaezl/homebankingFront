@@ -6,7 +6,7 @@ export const loadClient = createAsyncThunk("loadClient", async (_, { rejectWithV
   const token = localStorage.getItem("token");
 
   try {
-    const response = await axios.get("http://localhost:8080/api/auth/current", {
+    const response = await axios.get("https://homebanking-22e4.onrender.com/api/auth/current", {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -27,7 +27,7 @@ export const solicitCard = createAsyncThunk("solicitCard", async (cardData, { re
 
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/clients/current/cards",
+      "https://homebanking-22e4.onrender.com/api/clients/current/cards",
       cardData,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -39,13 +39,13 @@ export const solicitCard = createAsyncThunk("solicitCard", async (cardData, { re
   }
 });
 
-// Solicitar préstamo|
+// Solicitar préstamo
 export const solicitLoan = createAsyncThunk("solicitLoan", async (loanData, { rejectWithValue }) => {
   const token = localStorage.getItem("token");
 
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/loans/",
+      "https://homebanking-22e4.onrender.com/api/loans/",
       loanData,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -64,7 +64,7 @@ export const createAccount = createAsyncThunk(
     const token = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/clients/current/accounts",
+        "https://homebanking-22e4.onrender.com/api/clients/current/accounts",
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -77,6 +77,7 @@ export const createAccount = createAsyncThunk(
   }
 );
 
+// Solicitar transacción
 export const solicitTransaction = createAsyncThunk(
   "solicitTransaction",
   async (transactionData, { rejectWithValue }) => {
@@ -84,7 +85,7 @@ export const solicitTransaction = createAsyncThunk(
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/transaction/",
+        "https://homebanking-22e4.onrender.com/api/transaction/",
         transactionData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -94,7 +95,6 @@ export const solicitTransaction = createAsyncThunk(
     } catch (error) {
       console.log(error);
       return rejectWithValue(error.response ? error.response.data : "Unknown error");
-
     }
   }
 );
