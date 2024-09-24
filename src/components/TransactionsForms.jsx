@@ -22,11 +22,12 @@ const TransactionsForms = () => {
   function handleChange(event) {
     setDestinationType(event.target.value);
     setAccountSelected("");
-    setDestinationAccount("");
+    setDestinationAccount(""); // Resetea la cuenta de destino
   }
 
   function accountSelect(event) {
     setAccountSelected(event.target.value);
+    setDestinationAccount(""); // Resetea la cuenta de destino al seleccionar la cuenta de origen
   }
 
   function handleAmount(event) {
@@ -49,6 +50,7 @@ const TransactionsForms = () => {
 
     console.log(transactionData);
     dispatch(solicitTransaction(transactionData));
+    dispatch(loadClient());
   }
 
   useEffect(() => {
@@ -59,7 +61,7 @@ const TransactionsForms = () => {
         ) || []
       );
     } else {
-      setAvailableAccounts([]);
+      setAvailableAccounts([]); // No hay cuentas disponibles si es "otros"
     }
   }, [destinationType, accountSelected, client]);
 
@@ -121,9 +123,10 @@ const TransactionsForms = () => {
               name="destination"
               id="destination"
               onChange={(e) => setDestinationAccount(e.target.value)}
+              value={destinationAccount} // Asegúrate de que el valor esté controlado
               className="mt-1 w-full rounded-md border border-gray-300 py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500"
             >
-              <option value="" disabled>Select an account</option>
+              <option value="" disabled>Select Destination Account</option>
               {availableAccounts.map((account) => (
                 <option key={account.id} value={account.accountNumber}>
                   {account.accountNumber}

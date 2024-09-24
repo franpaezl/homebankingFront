@@ -21,6 +21,12 @@ const LoansForm = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationOpacity, setNotificationOpacity] = useState(1);
 
+
+
+
+
+
+
   useEffect(() => {
     if (client.firstName == "") {
       dispatch(loadClient());
@@ -86,6 +92,9 @@ const LoansForm = () => {
       amount: parseFloat(amount),
       accountNumber: selectedAccount,
     };
+
+
+
 
     try {
       await dispatch(solicitLoan(loanData));
