@@ -9,10 +9,11 @@ const Accounts = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!client.firstName) {
+    if (client.firstName == "") {
       dispatch(loadClient());
+
     }
-  }, [dispatch, client.firstName]);
+  }, [dispatch]);
 
   return (
     <div className="flex flex-col justify-center items-center pt-[20px]">

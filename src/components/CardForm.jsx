@@ -63,10 +63,11 @@ const CardForm = () => {
   };
 
   useEffect(() => {
-    if (!client.firstName) {
+    if (client.firstName == "") {
       dispatch(loadClient());
+
     }
-  }, [dispatch, client.firstName]);
+  }, [dispatch]);
 
   return (
     <div className="w-full h-full bg-[#93ABBF] flex">

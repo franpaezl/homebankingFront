@@ -13,19 +13,16 @@ const TransactionsForms = () => {
   const [amount, setAmount] = useState(0);
   const [description, setDescription] = useState("");
 
-  console.log("oigin" + accountSelected);
-  console.log("dest" + destinationAccount);
-  console.log("am"+amount);
-  console.log("desc" +description);
-
-
-
-
+  useEffect(() => {
+    if (client.firstName === "") {
+      dispatch(loadClient());
+    }
+  }, [dispatch]);
 
   function handleChange(event) {
     setDestinationType(event.target.value);
     setAccountSelected("");
-    setDestinationAccount(""); // Reiniciar el destino cuando cambia el tipo
+    setDestinationAccount("");
   }
 
   function accountSelect(event) {
@@ -43,17 +40,14 @@ const TransactionsForms = () => {
   function submitTransaction(event) {
     event.preventDefault();
 
-
     const transactionData = {
       originAccount: accountSelected,
       destinationAccount: destinationAccount,
       amount: amount,
       description: description,
-
     };
 
     console.log(transactionData);
-
     dispatch(solicitTransaction(transactionData));
   }
 
@@ -68,12 +62,6 @@ const TransactionsForms = () => {
       setAvailableAccounts([]);
     }
   }, [destinationType, accountSelected, client]);
-
-  useEffect(() => {
-    if (!client.firstName) {
-      dispatch(loadClient());
-    }
-  }, [dispatch, client.firstName]);
 
   return (
     <div className="w-[50%] bg-[#93ABBF] pt-[20px]">

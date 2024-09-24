@@ -16,10 +16,11 @@ const Account = () => {
   const clientAccounts = client?.accounts || []; // Use optional chaining
 
   useEffect(() => {
-    if (!client.firstName) {
+    if (client.firstName == "") {
       dispatch(loadClient());
+
     }
-  }, [dispatch, client.firstName]);
+  }, [dispatch]);
 
   const account = clientAccounts.find(acc => acc.id.toString() === id);
 

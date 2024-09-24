@@ -13,12 +13,12 @@ const Cards = () => {
 
   const [creditCard, setCreditCard] = useState([]);
   const [debitCard, setDebitCard] = useState([]);
-
   useEffect(() => {
-    if (!client.firstName) {
+    if (client.firstName == "") {
       dispatch(loadClient());
+
     }
-  }, [dispatch, client.firstName]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (client.cards) {
