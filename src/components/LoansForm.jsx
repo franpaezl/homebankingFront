@@ -22,11 +22,12 @@ const LoansForm = () => {
   const [notificationOpacity, setNotificationOpacity] = useState(1);
 
   useEffect(() => {
-    if (!client.firstName) {
+    if (client.firstName == "") {
       dispatch(loadClient());
+
     }
-    getAllLoans();
-  }, [dispatch, client.firstName]);
+    getAllLoans()
+  }, [dispatch]);
 
   const getAllLoans = async () => {
     setLoading(true);

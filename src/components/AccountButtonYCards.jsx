@@ -14,11 +14,13 @@ const AccountButtonYCards = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationOpacity, setNotificationOpacity] = useState(1);
 
+
   useEffect(() => {
-    if (!client.firstName) {
+    if (client.firstName == "") {
       dispatch(loadClient());
+
     }
-  }, [dispatch, client.firstName]);
+  }, [dispatch]);
 
   const handleCreateAccount = () => {
     if (accounts.length >= 3) {
