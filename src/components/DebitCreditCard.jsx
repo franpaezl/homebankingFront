@@ -1,6 +1,6 @@
 import React from "react";
 import image from "../assets/chip-removebg-preview.png";
-import image2 from "../assets/letrafrn.png";
+import image2 from "../assets/letrafen1.png";
 
 const DebitCreditCard = (props) => {
   return (
@@ -9,21 +9,21 @@ const DebitCreditCard = (props) => {
       style={props.color} // Apply inline style here
     >
       <div className="flex justify-between items-center">
-          <img src={image2} alt="Logo" className="w-[70px]" />
-        <div className="flex flex-col items-center">
+        {/* Aplicamos rotación de 45 grados a image2 */}
+        <img
+          src={image2}
+          alt="Logo"
+          className="w-[70px]"
+        />
           <p className={`font-semibold ${props.textColor}`}>{props.cardType}</p>
-        </div>
       </div>
-        <img src={image} alt="Chip" className="w-[50px]" />
-      <p className={`text-xl tracking-widest mb-4 ${props.textColor}`}>{props.number}</p>
-      <p className={`text-xs mt-[-10px] ${props.textColor}`}>CVV: {props.cvv}</p>
+      <img src={image} alt="Chip" className="w-[50px]" />
+      <p className={`text-xl font-semibold tracking-widest ${props.textColor}`}>{props.number}</p>
+      <p className={`text-xs ${props.textColor}`}>CVV: {props.cvv}</p>
 
-      <div className="flex justify-between items-center">
-        <p className={`font-semibold ${props.textColor}`}>{props.name}</p>
-        <div>
-          <p className="text-sm">Valid Thru</p>
-          <p className={`${props.textColor}`}>{props.thru}</p>
-        </div>
+      <div className="flex flex-col">
+        <p className={`text-sm ${props.textColor}`}>Valid Thru: {props.thru}</p>
+        <p className={`font-semibold text-xl ${props.textColor}`}>{props.name}</p>
       </div>
     </div>
   );

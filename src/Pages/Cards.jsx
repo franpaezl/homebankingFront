@@ -58,7 +58,7 @@ const Cards = () => {
         return {
           ...baseStyles,
           backgroundImage: `url(${titaniumVector})`,
-          textColor: 'text-white', // Texto en blanco para TITANIUM
+          textColor: 'text-black', // Texto en blanco para TITANIUM
         };
       case "SILVER":
         return {
@@ -73,6 +73,15 @@ const Cards = () => {
         };
     }
   }
+
+  function getMonthAndYearShort(dateStr) {
+    const date = new Date(dateStr); // Crear un objeto Date a partir de la cadena
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Obtener el mes y agregar ceros si es necesario
+    const year = date.getFullYear().toString().slice(-2); // Obtener los últimos 2 dígitos del año
+    return `${month}/${year}`; // Devolver en formato MM/YY
+  }
+
+
 
   return (
     <div className='flex flex-col w-full my-8 px-4'>
@@ -89,7 +98,7 @@ const Cards = () => {
                     cardType={card.type}
                     number={card.number}
                     cvv={card.cvv}
-                    thru={card.thruDate}
+                    thru={getMonthAndYearShort(card.thruDate)}
                     name={card.cardHolder}
                     color={styles} // Aplicar estilos de color y texto
                     textColor={styles.textColor} // Pasar el color del texto
@@ -110,12 +119,12 @@ const Cards = () => {
               const styles = colorCard(card);
               return (
                 <div className='flex flex-col w-[30%]' key={card.id}>
-                  <h2 className={`text-center font-bold ${styles.textColor}`}>{card.color}</h2>
+                  <h2 className={`text-center font-bold`}>{card.color}</h2>
                   <DebitCreditCard
                     cardType={card.type}
                     number={card.number}
                     cvv={card.cvv}
-                    thru={card.thruDate}
+                    thru={getMonthAndYearShort(card.thruDate)}
                     name={card.cardHolder}
                     color={styles} // Aplicar estilos de color y texto
                     textColor={styles.textColor} // Pasar el color del texto

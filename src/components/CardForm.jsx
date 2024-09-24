@@ -7,8 +7,12 @@ const CardForm = () => {
   const [cardColor, setCardColor] = useState("");
   const [loading, setLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState(""); // Manejo de error directo
+
+  // Estados para la notificación
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationOpacity, setNotificationOpacity] = useState(1);
+
   const client = useSelector((store) => store.clientReducer.client);
   const clientCards = client.cards || [];
   const dispatch = useDispatch();
@@ -23,7 +27,12 @@ const CardForm = () => {
     try {
       await dispatch(solicitCard(cardRequested));
       dispatch(loadClient());
-      setShowSuccessModal(true);
+
+      // Mostrar la notificación en lugar del modal de éxito
+      setShowNotification(true);
+      setNotificationOpacity(1);
+      setTimeout(() => setNotificationOpacity(0), 5000); // Desaparece después de 5 segundos
+      setTimeout(() => setShowNotification(false), 6000); // Ocultar el componente después de 6 segundos
     } catch (error) {
       console.error("Failed to submit card request:", error);
       if (error.response && error.response.data) {
@@ -124,9 +133,8 @@ const CardForm = () => {
 
         {/* Mostrar error */}
         {errorMessage && (
-  <p className="text-red-500 font-extrabold">{errorMessage}</p>
-)}
-
+          <p className="text-red-500 font-extrabold">{errorMessage}</p>
+        )}
 
         <button
           type="submit"
@@ -165,20 +173,13 @@ const CardForm = () => {
         </div>
       )}
 
-      {/* Success Modal */}
-      {showSuccessModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl mb-4">Card request submitted successfully!</h2>
-            <div className="flex justify-end">
-              <button
-                onClick={() => setShowSuccessModal(false)}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                OK
-              </button>
-            </div>
-          </div>
+      {/* Success Notification */}
+      {showNotification && (
+        <div
+          className="fixed bottom-5 right-5 bg-green-500 text-white p-4 rounded shadow-lg transition-opacity duration-500"
+          style={{ opacity: notificationOpacity }}
+        >
+          Card request submitted successfully!
         </div>
       )}
     </div>
