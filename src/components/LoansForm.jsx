@@ -31,7 +31,7 @@ const LoansForm = () => {
   const getAllLoans = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:8080/api/loans/all/");
+      const response = await axios.get("https://homebanking-22e4.onrender.com/api/loans/all/");
       setLoansType(response.data);
     } catch (error) {
       setErrorMessage("Failed to load loan types.");

@@ -15,7 +15,7 @@ const SingUp = () => {
         </div>
         <SignUpForm />
         <p className='text-xs'>or</p>
-        <Link to="/sing-in" className='text-[#333333] underline text-[13px]'>Sing in</Link>
+        <Link to="/" className='text-[#333333] underline text-[13px]'>Sing in</Link>
       </div>
     </div>
   );
