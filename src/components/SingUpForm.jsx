@@ -90,7 +90,7 @@ const SignUpForm = () => {
       setPassword("");
     } catch (error) {
       // Mostrar errores del backend
-      const backendError = error.response?.data?.message || "Registration failed. Please try again.";
+      const backendError = error.response.data;
       console.error("Error during registration:", backendError);
       setError(backendError); // Aquí mostramos el error del backend si existe
     } finally {

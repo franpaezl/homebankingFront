@@ -74,7 +74,7 @@ const SignInInput = () => {
           setEmailError("Invalid email or password. Please try again.");
         } else {
           // Handle other errors
-          setEmailError("An error occurred. Please try again later.");
+          setEmailError(error.response.data);
           console.error("Error message:", error.response.data);
         }
       } else {
