@@ -16,9 +16,8 @@ const AccountButtonYCards = () => {
 
 
   useEffect(() => {
-    if (client.firstName == "") {
+    if (client.firstName === "") {
       dispatch(loadClient());
-
     }
   }, [client]);
 

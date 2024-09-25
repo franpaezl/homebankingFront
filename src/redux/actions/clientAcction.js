@@ -1,5 +1,8 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+
+
 
 // Cargar cliente
 export const loadClient = createAsyncThunk("loadClient", async (_, { rejectWithValue }) => {
@@ -64,6 +67,7 @@ export const createAccount = createAsyncThunk(
   "createAccount",
   async (_, { rejectWithValue }) => {
     const token = localStorage.getItem("token");
+
     try {
       const response = await axios.post(
         "https://homebanking-22e4.onrender.com/api/clients/current/accounts",
@@ -84,6 +88,7 @@ export const solicitTransaction = createAsyncThunk(
   "solicitTransaction",
   async (transactionData, { rejectWithValue }) => {
     const token = localStorage.getItem("token");
+    // const dispatch = useDispatch()
 
     try {
       const response = await axios.post(
@@ -93,6 +98,9 @@ export const solicitTransaction = createAsyncThunk(
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      // dispatch(loadClient())
+      console.log("hola");
+
       return response.data;
     } catch (error) {
       console.log(error);

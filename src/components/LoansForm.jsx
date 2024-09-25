@@ -33,9 +33,10 @@ const LoansForm = () => {
   useEffect(() => {
     if (client.firstName === "") {
       dispatch(loadClient());
+
     }
-    getAllLoans();
-  }, [client, dispatch]);
+    getAllLoans()
+  }, [client]);
 
   const getAllLoans = async () => {
     try {
