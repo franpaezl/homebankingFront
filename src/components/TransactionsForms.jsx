@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { loadClient, solicitTransaction } from "../redux/actions/clientAcction";
+import { useNavigate } from "react-router-dom";
 
 const TransactionsForms = () => {
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const client = useSelector((store) => store.clientReducer.client);
   const [destinationType, setDestinationType] = useState("own");
@@ -102,6 +104,8 @@ const TransactionsForms = () => {
 
     dispatch(solicitTransaction(transactionData));
     dispatch(loadClient());
+    navigate("/account")
+
     setShowSuccessNotification(true);
     setShowModal(false);
 

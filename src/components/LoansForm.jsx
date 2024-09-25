@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { loadClient, solicitLoan } from "../redux/actions/clientAcction";
+import { useNavigate } from "react-router-dom";
 
 const LoansForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const client = useSelector((store) => store.clientReducer.client);
   const clientAccounts = client?.accounts || [];
   const clientLoans = client.loans;
@@ -121,6 +123,7 @@ const LoansForm = () => {
   const confirmLoan = () => {
     dispatch(solicitLoan(confirmationLoanData))
       .then(() => {
+        navigate("/account")
         dispatch(loadClient)
         setShowConfirmModal(false);
         setShowSuccessModal(true);
