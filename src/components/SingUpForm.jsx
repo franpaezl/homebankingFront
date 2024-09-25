@@ -10,26 +10,33 @@ const SignUpForm = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // Estados de error para cada campo
+  const [firstNameError, setFirstNameError] = useState(false);
+  const [lastNameError, setLastNameError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+
   const navigate = useNavigate();
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
-    setError(null);
+    setFirstNameError(false); // Limpiar error al cambiar el valor
   };
 
   const handleLastNameChange = (event) => {
     setLastName(event.target.value);
-    setError(null);
+    setLastNameError(false);
   };
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
-    setError(null);
+    setEmailError(false);
   };
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
-    setError(null);
+    setPasswordError(false);
   };
 
   const isEmailValid = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -38,28 +45,36 @@ const SignUpForm = () => {
     event.preventDefault();
 
     // Validaciones de campos vacíos
+    let isValid = true;
+    setFirstNameError(false);
+    setLastNameError(false);
+    setEmailError(false);
+    setPasswordError(false);
+
     if (!firstName) {
-      setError("First name is required.");
-      return;
+      setFirstNameError(true);
+      isValid = false;
     }
     if (!lastName) {
-      setError("Last name is required.");
-      return;
+      setLastNameError(true);
+      isValid = false;
     }
     if (!email) {
-      setError("Email is required.");
-      return;
+      setEmailError(true);
+      isValid = false;
     }
     if (!password) {
-      setError("Password is required.");
-      return;
+      setPasswordError(true);
+      isValid = false;
     }
 
     // Validación de formato de email
-    if (!isEmailValid(email)) {
-      setError("Invalid email format.");
-      return;
+    if (email && !isEmailValid(email)) {
+      setEmailError(true);
+      isValid = false;
     }
+
+    if (!isValid) return; // Si no es válido, salir de la función
 
     setLoading(true);
 
@@ -111,8 +126,9 @@ const SignUpForm = () => {
           name="firstName"
           value={firstName}
           onChange={handleFirstNameChange}
-          className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
+          className={`w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${firstNameError ? 'border-red-500' : 'border-gray-300'}`}
         />
+        {firstNameError && <p className="text-red-500 text-sm">First name is required.</p>}
 
         <label htmlFor="lastName">Last Name</label>
         <input
@@ -121,18 +137,20 @@ const SignUpForm = () => {
           name="lastName"
           value={lastName}
           onChange={handleLastNameChange}
-          className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
+          className={`w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${lastNameError ? 'border-red-500' : 'border-gray-300'}`}
         />
+        {lastNameError && <p className="text-red-500 text-sm">Last name is required.</p>}
 
         <label htmlFor="email">Email</label>
         <input
-          type="email"
+          type="text" // Cambiado de "email" a "text"
           id="email"
           name="email"
           value={email}
           onChange={handleEmailChange}
-          className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
+          className={`w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${emailError ? 'border-red-500' : 'border-gray-300'}`}
         />
+        {emailError && <p className="text-red-500 text-sm">{!isEmailValid(email) ? "Invalid email format." : "Email is required."}</p>}
 
         <label htmlFor="password">Password</label>
         <input
@@ -141,8 +159,9 @@ const SignUpForm = () => {
           name="password"
           value={password}
           onChange={handlePasswordChange}
-          className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
+          className={`w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${passwordError ? 'border-red-500' : 'border-gray-300'}`}
         />
+        {passwordError && <p className="text-red-500 text-sm">Password is required.</p>}
 
         {error && <p className="text-red-500">{error}</p>}
 
