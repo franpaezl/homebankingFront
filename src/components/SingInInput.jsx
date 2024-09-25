@@ -9,6 +9,7 @@ const SignInInput = () => {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(null); // State to store email error messages
   const [passwordError, setPasswordError] = useState(null); // State to store password error messages
+  const [backendError, setBackendError] = useState(null)
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -70,15 +71,15 @@ const SignInInput = () => {
       console.error("Error logging in:", error);
       if (error.response) {
         if (error.response.status === 401) {
-          // Handle unauthorized error (e.g., incorrect credentials)
-          setEmailError("Invalid email or password. Please try again.");
+
+          setBackendError("Invalid email or password. Please try again.");
         } else {
-          // Handle other errors
-          setEmailError(error.response.data);
+
+          setBackendError(error.response.data);
           console.error("Error message:", error.response.data);
         }
       } else {
-        // Handle unknown error
+
         setEmailError("An unknown error occurred. Please try again later.");
       }
     }
@@ -87,7 +88,7 @@ const SignInInput = () => {
   return (
     <div className="w-full mt-[20px]">
       <form className="flex flex-col gap-[10px] justify-center items-center w-full" onSubmit={handleSubmit}>
-
+        <div className="flex flex-col w-full items-center">
         <label htmlFor="mail">Email</label>
         <input
           type="email"
@@ -97,8 +98,11 @@ const SignInInput = () => {
           onChange={handleEmailChange}
           className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
         />
+        {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
+        </div>
 
-        <label htmlFor="password">Password</label>
+        <div className="flex flex-col w-full items-center">
+      <label htmlFor="password">Password</label>
         <input
           type="password"
           id="password"
@@ -107,8 +111,10 @@ const SignInInput = () => {
           onChange={handlePasswordChange}
           className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
           />
-        {passwordError && <p className="text-red-500">{passwordError}</p>}
-        {emailError && <p className="text-red-500">{emailError}</p>}
+        {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
+        {backendError && <p className="text-red-500 text-sm">{backendError}</p>}
+        </div>
+
 
         <button
           type="submit"

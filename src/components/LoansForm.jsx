@@ -27,6 +27,7 @@ const LoansForm = () => {
   const [paymentError, setPaymentError] = useState(false);
   const [amountExceedError, setAmountExceedError] = useState(false);
   const [loanAlreadyRequested, setLoanAlreadyRequested] = useState(false); // New state for loan request validation
+  console.log(clientLoans);
 
   console.log(loanSelected);
   console.log(loansType);
@@ -51,7 +52,7 @@ const LoansForm = () => {
     }
   };
 
-  const requestedLoan = loansType.find(loans => loans.id == Number(loanSelected)) || {};
+  const requestedLoan = loansType.find(loans => loans.id == loanSelected) || {};
   const { payments = [], maxAmount = 0 } = requestedLoan;
 
   useEffect(() => {
@@ -66,7 +67,7 @@ const LoansForm = () => {
     setAccountError(!selectedAccount);
     setAmountError(amount <= 0);
     setPaymentError(!selectedPayment);
-    setLoanAlreadyRequested(clientLoans.some(loan => loan.id === loanSelected)); // Check if loan is already requested
+    setLoanAlreadyRequested(clientLoans.some(loan => loan.id === Number(loanSelected)));
     setAmountExceedError(false);
 
     if (requestedLoan && amount > maxAmount) {
@@ -92,12 +93,20 @@ const LoansForm = () => {
     setShowConfirmModal(true);
   }
 
+  console.log(typeof(loanSelected));
+  console.log(amount);
+  console.log(selectedPayment);
+  console.log(selectedAccount);
+
+
+
+
   function handleConfirmLoan() {
     const loanData = {
-      loanId: loanSelected,
+      id: loanSelected,
       amount: parseFloat(amount),
       payments: parseInt(selectedPayment),
-      destinationAccount: selectedAccount,
+      accountNumber: selectedAccount,
     };
 
     dispatch(solicitLoan(loanData));

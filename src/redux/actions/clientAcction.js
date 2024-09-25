@@ -51,6 +51,8 @@ export const solicitLoan = createAsyncThunk("solicitLoan", async (loanData, { re
         headers: { Authorization: `Bearer ${token}` },
       }
     );
+    console.log(response.data);
+
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response ? error.response.data : "Unknown error");

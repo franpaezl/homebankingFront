@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { solicitCard, loadClient } from "../redux/actions/clientAcction";
 
@@ -7,9 +7,9 @@ const CardForm = () => {
   const [cardColor, setCardColor] = useState("");
   const [loading, setLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(""); // Manejo de error directo
+  const [errorMessages, setErrorMessages] = useState({});
 
-  // Estados para la notificación
+  // Notification states
   const [showNotification, setShowNotification] = useState(false);
   const [notificationOpacity, setNotificationOpacity] = useState(1);
 
@@ -27,19 +27,14 @@ const CardForm = () => {
     try {
       await dispatch(solicitCard(cardRequested));
       dispatch(loadClient());
-
-      // Mostrar la notificación en lugar del modal de éxito
       setShowNotification(true);
       setNotificationOpacity(1);
-      setTimeout(() => setNotificationOpacity(0), 5000); // Desaparece después de 5 segundos
-      setTimeout(() => setShowNotification(false), 6000); // Ocultar el componente después de 6 segundos
+      setTimeout(() => setNotificationOpacity(0), 5000);
+      setTimeout(() => setShowNotification(false), 6000);
     } catch (error) {
       console.error("Failed to submit card request:", error);
-      if (error.response && error.response.data) {
-        setErrorMessage(error.response.data);
-      } else {
-        setErrorMessage("An unexpected error occurred.");
-      }
+      const errorMessage = error.response?.data || "An unexpected error occurred.";
+      setErrorMessages({ general: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -47,39 +42,40 @@ const CardForm = () => {
 
   const handleCardTypeChange = (event) => {
     setCardType(event.target.value);
-    setErrorMessage(""); // Resetear el error al cambiar el valor
+    setErrorMessages({}); // Reset errors on change
   };
 
   const handleCardColorChange = (event) => {
     setCardColor(event.target.value);
-    setErrorMessage(""); // Resetear el error al cambiar el valor
+    setErrorMessages({});
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const errors = {};
 
-    // Validaciones de campos vacíos
+    // Validate fields
     if (!cardType) {
-      setErrorMessage("Card type is required.");
-      return;
+      errors.cardType = "Card type is required.";
     }
     if (!cardColor) {
-      setErrorMessage("Card color is required.");
-      return;
+      errors.cardColor = "Card color is required.";
     }
 
-    // Verifica si ya existe una tarjeta del mismo tipo y color
     const exists = clientCards.some(
-      (card) =>
-        card.type === cardType.toUpperCase() &&
-        card.color === cardColor.toUpperCase()
+      (card) => card.type === cardType.toUpperCase() && card.color === cardColor.toUpperCase()
     );
 
     if (exists) {
-      setErrorMessage("You cannot have two cards of the same type and color.");
-    } else {
-      setShowConfirmModal(true);
+      errors.general = "You cannot have two cards of the same type and color.";
     }
+
+    if (Object.keys(errors).length > 0) {
+      setErrorMessages(errors);
+      return;
+    }
+
+    setShowConfirmModal(true);
   };
 
   useEffect(() => {
@@ -90,12 +86,9 @@ const CardForm = () => {
 
   return (
     <div className="w-full h-full bg-[#93ABBF] flex">
-      <form
-        className="flex flex-col gap-4 justify-center items-center w-full"
-        onSubmit={handleSubmit}
-      >
+      <form className="flex flex-col gap-4 justify-center items-center w-full" onSubmit={handleSubmit}>
         <h2 className="text-2xl font-bold text-gray-800">Solicit Card</h2>
-
+        <div className="flex flex-col w-full items-center">
         <label htmlFor="cardType" className="font-semibold text-gray-700">
           Select Card Type
         </label>
@@ -112,6 +105,10 @@ const CardForm = () => {
           <option value="CREDIT">Credit</option>
           <option value="DEBIT">Debit</option>
         </select>
+        {errorMessages.cardType && <p className="text-red-500 text-sm">{errorMessages.cardType}</p>}
+        </div>
+
+        <div className="flex flex-col w-full items-center">
 
         <label htmlFor="color" className="font-semibold text-gray-700">
           Select Card Color
@@ -119,7 +116,7 @@ const CardForm = () => {
         <select
           name="color"
           id="color"
-          className="mt-1 w-[80%] rounded-md border border-gray-300 py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 mb-4"
+          className="mt-1 w-[80%] rounded-md border border-gray-300 py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500   "
           value={cardColor}
           onChange={handleCardColorChange}
         >
@@ -130,11 +127,9 @@ const CardForm = () => {
           <option value="GOLD">Gold</option>
           <option value="TITANIUM">Titanium</option>
         </select>
-
-        {/* Mostrar error */}
-        {errorMessage && (
-          <p className="text-red-500 font-extrabold">{errorMessage}</p>
-        )}
+        {errorMessages.cardColor && <p className="text-red-500 text-sm">{errorMessages.cardColor}</p>}
+        {errorMessages.general && <p className="text-red-500 text-sm">{errorMessages.general}</p>}
+        </div>
 
         <button
           type="submit"
@@ -149,9 +144,7 @@ const CardForm = () => {
       {showConfirmModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl mb-4">
-              Are you sure you want to request this card?
-            </h2>
+            <h2 className="text-xl mb-4">Are you sure you want to request this card?</h2>
             <div className="flex justify-end">
               <button
                 onClick={() => {
@@ -178,6 +171,8 @@ const CardForm = () => {
         <div
           className="fixed bottom-5 right-5 bg-green-500 text-white p-4 rounded shadow-lg transition-opacity duration-500"
           style={{ opacity: notificationOpacity }}
+          role="alert"
+          aria-live="polite"
         >
           Card request submitted successfully!
         </div>
