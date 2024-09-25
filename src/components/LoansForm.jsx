@@ -124,7 +124,7 @@ const LoansForm = () => {
     dispatch(solicitLoan(confirmationLoanData))
       .then(() => {
         navigate("/account")
-        dispatch(loadClient)
+        dispatch(loadClient())
         setShowConfirmModal(false);
         setShowSuccessModal(true);
         setNotificationOpacity(1);
