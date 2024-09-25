@@ -1,242 +1,219 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { solicitLoan, loadClient } from "../redux/actions/clientAcction";
+import { loadClient, solicitLoan } from "../redux/actions/clientAcction";
 
 const LoansForm = () => {
   const dispatch = useDispatch();
   const client = useSelector((store) => store.clientReducer.client);
   const clientAccounts = client?.accounts || [];
-  const clientLoans = client.loans || [];
-  const [loansType, setLoansType] = useState([]);
-  const [loanSelected, setLoanSelected] = useState(1);
+  const clientLoans = client.loans;
+  const [loanType, setLoanType] = useState([]);
+  const [loanSelected, setLoanSelected] = useState("");
+  const [accountSelected, setAccountSelected] = useState("");
   const [amount, setAmount] = useState("");
   const [selectedPayment, setSelectedPayment] = useState("");
-  const [selectedAccount, setSelectedAccount] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [selectedLoanId, setSelectedLoanId] = useState("");
+
+  // Modal states
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
-  const [notificationOpacity, setNotificationOpacity] = useState(1);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [notificationOpacity, setNotificationOpacity] = useState(0);
+  const [confirmationLoanData, setConfirmationLoanData] = useState(null);
 
-  // Estados para manejar los errores
-  const [loanError, setLoanError] = useState(false);
-  const [accountError, setAccountError] = useState(false);
-  const [amountError, setAmountError] = useState(false);
-  const [paymentError, setPaymentError] = useState(false);
-  const [amountExceedError, setAmountExceedError] = useState(false);
-  const [loanAlreadyRequested, setLoanAlreadyRequested] = useState(false); // New state for loan request validation
-  console.log(clientLoans);
-
-  console.log(loanSelected);
-  console.log(loansType);
+  // Error state variables
+  const [errors, setErrors] = useState({
+    loanSelected: "",
+    accountSelected: "",
+    amount: "",
+    selectedPayment: "",
+    loanExists: "",
+  });
 
   useEffect(() => {
     if (client.firstName === "") {
       dispatch(loadClient());
     }
     getAllLoans();
-  }, [client]);
+  }, [client, dispatch]);
 
   const getAllLoans = async () => {
-    setLoading(true);
     try {
       const response = await axios.get("https://homebanking-22e4.onrender.com/api/loans/all/");
-      setLoansType(response.data);
+      setLoanType(response.data);
     } catch (error) {
-      setErrorMessage("Failed to load loan types.");
-      setShowErrorModal(true);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching loans:", error);
+      alert("There was an error fetching the loans. Please try again later.");
     }
   };
 
-  const requestedLoan = loansType.find(loans => loans.id == loanSelected) || {};
-  const { payments = [], maxAmount = 0 } = requestedLoan;
+  const loanNames = loanType.map((loan) => loan.name);
 
-  useEffect(() => {
-    if (requestedLoan) {
-      setSelectedPayment(payments[0] || "");
+  const selectLoan = (e) => {
+    const selectedLoanName = e.target.value;
+    setLoanSelected(selectedLoanName);
+    setAmount("");
+    setSelectedPayment("");
+    setSelectedLoanId(loanId(selectedLoanName));
+    setErrors((prev) => ({ ...prev, loanSelected: "" }));
+  };
+
+  const selectAccount = (e) => {
+    setAccountSelected(e.target.value);
+    setErrors((prev) => ({ ...prev, accountSelected: "" }));
+  };
+
+  const inputSelectedLoan = loanType.find((loans) => loans.name === loanSelected);
+  const { maxAmount = 0, payments = [] } = inputSelectedLoan || {};
+
+  const handleAmountChange = (e) => {
+    setAmount(e.target.value);
+    setErrors((prev) => ({ ...prev, amount: "" }));
+  };
+
+  const handlePaymentChange = (e) => {
+    setSelectedPayment(e.target.value);
+    setErrors((prev) => ({ ...prev, selectedPayment: "" }));
+  };
+
+  function loanId(loanName) {
+    switch (loanName) {
+      case "Mortgage":
+        return 1;
+      case "Personal":
+        return 2;
+      case "Automotive":
+        return 3;
+      default:
+        return null;
     }
-  }, [loanSelected, loansType]);
-
-  function validateForm() {
-    let isValid = true;
-    setLoanError(!loanSelected);
-    setAccountError(!selectedAccount);
-    setAmountError(amount <= 0);
-    setPaymentError(!selectedPayment);
-    setLoanAlreadyRequested(clientLoans.some(loan => loan.id === Number(loanSelected)));
-    setAmountExceedError(false);
-
-    if (requestedLoan && amount > maxAmount) {
-      setAmountExceedError(true);
-      isValid = false;
-    }
-
-    if (!loanSelected || !selectedAccount || amount <= 0 || !selectedPayment || loanAlreadyRequested) {
-      isValid = false;
-    }
-
-    return isValid;
   }
 
-  function handleLoanSubmit(event) {
-    event.preventDefault();
-    if (!validateForm()) {
-      if (loanAlreadyRequested) {
-        alert("You have already requested this loan."); // Alert or show error modal
-      }
-      return;
-    }
-    setShowConfirmModal(true);
-  }
+  const validateForm = () => {
+    const newErrors = {};
+    if (!loanSelected) newErrors.loanSelected = "Please select a loan type.";
+    if (!accountSelected) newErrors.accountSelected = "Please select an account.";
+    if (!amount) newErrors.amount = "Please enter an amount.";
+    if (!selectedPayment) newErrors.selectedPayment = "Please select the number of payments.";
+    if (clientLoans.some((loan) => loan.name === loanSelected)) newErrors.loanExists = "You already have this loan.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // returns true if no errors
+  };
 
-  console.log(typeof(loanSelected));
-  console.log(amount);
-  console.log(selectedPayment);
-  console.log(selectedAccount);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validateForm()) return; // Exit if validation fails
 
-
-
-
-  function handleConfirmLoan() {
+    // Prepare loan data for confirmation
     const loanData = {
-      id: loanSelected,
-      amount: parseFloat(amount),
-      payments: parseInt(selectedPayment),
-      accountNumber: selectedAccount,
+      id: selectedLoanId,
+      payment: selectedPayment,
+      amount: amount,
+      accountNumber: accountSelected,
     };
 
-    dispatch(solicitLoan(loanData));
-    dispatch(loadClient());
+    // Show confirmation modal
+    setConfirmationLoanData(loanData);
+    setShowConfirmModal(true);
+  };
 
-    setShowConfirmModal(false);
-    setShowSuccessNotification(true);
+  const confirmLoan = () => {
+    dispatch(solicitLoan(confirmationLoanData))
+      .then(() => {
+        setShowConfirmModal(false);
+        setShowSuccessModal(true);
+        setNotificationOpacity(1);
 
-    setTimeout(() => {
-      setNotificationOpacity(0);
-    }, 3000);
-  }
+        // Reset form fields after successful submission
+        setLoanSelected("");
+        setAccountSelected("");
+        setAmount("");
+        setSelectedPayment("");
+        setSelectedLoanId("");
+        setErrors({});
+
+        // Hide success modal after 3 seconds
+        setTimeout(() => {
+          setNotificationOpacity(0);
+          setShowSuccessModal(false);
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error("Error submitting loan:", error);
+        alert("There was an error submitting the loan. Please try again.");
+        setShowConfirmModal(false); // Close confirmation modal on error
+      });
+  };
 
   return (
-    <div className="w-[50%] bg-[#93ABBF] py-[40px]">
-      <form className="flex flex-col gap-4 px-6" onSubmit={handleLoanSubmit}>
-        <h2 className="text-2xl font-bold text-gray-800">Loan Details</h2>
+    <div className="w-[50%] bg-[#93ABBF] py-[40px] px-6">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <h2 className="text-2xl font-semibold text-gray-800">Loan Details</h2>
 
         <div className="flex flex-col">
-          <label htmlFor="loan" className="font-semibold text-gray-700">
-            Loan Type
-          </label>
-          <select
-            name="loan"
-            id="loan"
-            value={loanSelected}
-            onChange={(e) => {
-              setLoanSelected(e.target.value);
-              setLoanError(false);
-            }}
-            className={`mt-1 w-full rounded-md border ${loanError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
-          >
+          <label htmlFor="loan" className="font-semibold text-gray-700">Loan Type</label>
+          <select name="loan" id="loan" value={loanSelected} onChange={selectLoan} className="mt-1 w-full rounded-md py-2 px-3 text-gray-900 bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
             <option value="" disabled>Select a loan type</option>
-            {loansType.map((loan) => (
-              <option key={loan.id} value={loan.id}>
-                {loan.name}
-              </option>
+            {loanNames.map((loan) => (
+              <option key={loan} value={loan}>{loan}</option>
             ))}
           </select>
-          {loanError && <p className="text-red-500 text-sm">Please select a loan type.</p>}
+          {errors.loanSelected && <p className="text-red-600">{errors.loanSelected}</p>}
         </div>
 
         <div className="flex flex-col">
-          <label htmlFor="account" className="font-semibold text-gray-700">
-            Destination Account
-          </label>
-          <select
-            name="account"
-            id="account"
-            value={selectedAccount}
-            onChange={(e) => {
-              setSelectedAccount(e.target.value);
-              setAccountError(false);
-            }}
-            className={`mt-1 w-full rounded-md border ${accountError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
-          >
+          <label htmlFor="account" className="font-semibold text-gray-700">Destination Account</label>
+          <select name="account" id="account" value={accountSelected} onChange={selectAccount} className="mt-1 w-full rounded-md py-2 px-3 text-gray-900 bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
             <option value="" disabled>Select an account</option>
             {clientAccounts.map((account) => (
-              <option key={account.id} value={account.accountNumber}>
-                {account.accountNumber}
-              </option>
+              <option key={account.id} value={account.accountNumber}>{account.accountNumber}</option>
             ))}
           </select>
-          {accountError && <p className="text-red-500 text-sm">Please select a destination account.</p>}
+          {errors.accountSelected && <p className="text-red-600">{errors.accountSelected}</p>}
         </div>
 
         <div className="flex flex-col">
           <label htmlFor="amount" className="font-semibold text-gray-700">Amount</label>
-          <input
-            type="number"
-            max={maxAmount}
-            placeholder={`Max amount: ${maxAmount}`}
-            id="amount"
-            name="amount"
-            value={amount}
-            onChange={(e) => {
-              setAmount(e.target.value);
-              setAmountError(false);
-            }}
-            className={`mt-1 w-full rounded-md border ${amountError || amountExceedError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
-          />
-          {amountError && <p className="text-red-500 text-sm">Please enter a valid amount greater than 0.</p>}
-          {amountExceedError && <p className="text-red-500 text-sm">Amount exceeds the loan limit.</p>}
+          <input type="number" max={maxAmount} placeholder={`Max amount: $${maxAmount}`} id="amount" name="amount" value={amount} onChange={handleAmountChange} className="mt-1 w-full rounded-md py-2 px-3 text-gray-900 bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500" />
+          {errors.amount && <p className="text-red-600">{errors.amount}</p>}
         </div>
 
         <div className="flex flex-col">
           <label htmlFor="payments" className="font-semibold text-gray-700">Payments</label>
-          <select
-            id="payments"
-            name="payments"
-            value={selectedPayment}
-            onChange={(e) => {
-              setSelectedPayment(e.target.value);
-              setPaymentError(false);
-            }}
-            className={`mt-1 w-full rounded-md border ${paymentError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
-          >
+          <select id="payments" name="payments" value={selectedPayment} onChange={handlePaymentChange} className="mt-1 w-full rounded-md py-2 px-3 text-gray-900 bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
             <option value="" disabled>Select number of payments</option>
             {payments.map((payment) => (
-              <option key={payment} value={payment}>
-                {payment}
-              </option>
+              <option key={payment} value={payment}>{payment}</option>
             ))}
           </select>
-          {paymentError && <p className="text-red-500 text-sm">Please select a valid number of payments.</p>}
+          {errors.selectedPayment && <p className="text-red-600">{errors.selectedPayment}</p>}
         </div>
 
-        <button type="submit" className="px-6 py-2 bg-[#023E73] text-white font-semibold rounded-lg shadow-md hover:bg-[#266288] focus:outline-none focus:ring-2 focus:ring-blue-400">
-          Submit Loan
-        </button>
+        {errors.loanExists && <p className="text-red-600">{errors.loanExists}</p>}
+        <button type="submit" className="mt-4 w-full rounded-md bg-indigo-600 py-2 text-white hover:bg-indigo-700 focus:outline-none">Submit</button>
       </form>
 
-      {/* Modal Confirmation */}
+      {/* Confirmation Modal */}
       {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6">
-            <h2 className="text-lg font-bold">Confirm Loan Request</h2>
-            <p>Are you sure you want to request this loan?</p>
-            <div className="flex justify-between mt-4">
-              <button onClick={handleConfirmLoan} className="px-4 py-2 bg-green-500 text-white rounded-md">Confirm</button>
-              <button onClick={() => setShowConfirmModal(false)} className="px-4 py-2 bg-red-500 text-white rounded-md">Cancel</button>
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-1/3">
+            <h2 className="text-lg font-semibold">Confirm Loan Request</h2>
+            <p>Are you sure you want to request a {loanSelected} loan of ${amount} for {selectedPayment} payments?</p>
+            <div className="flex justify-end mt-4">
+              <button onClick={() => setShowConfirmModal(false)} className="mr-2 rounded-md border border-gray-300 bg-white py-1 px-4 hover:bg-gray-200">Cancel</button>
+              <button onClick={confirmLoan} className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600">Confirm</button>
             </div>
           </div>
         </div>
       )}
 
       {/* Success Notification */}
-      {showSuccessNotification && (
-        <div className={`fixed bottom-0 right-0 m-4 p-4 bg-green-500 text-white rounded-md transition-opacity duration-500`} style={{ opacity: notificationOpacity }}>
-          Loan request submitted successfully!
+      {showSuccessModal && (
+        <div
+          className="fixed bottom-0 right-0 m-4 p-4 bg-green-500 text-white rounded-md transition-opacity duration-300 ease-in-out"
+          style={{ opacity: notificationOpacity }}
+        >
+          Transaction Successful!
         </div>
       )}
     </div>

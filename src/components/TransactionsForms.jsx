@@ -59,6 +59,7 @@ const TransactionsForms = () => {
 
   function handleDescription(event) {
     setDescription(event.target.value);
+    descriptionError(false)
   }
 
   function validateForm() {

@@ -100,7 +100,7 @@ const SignUpForm = () => {
       );
       console.log("Registration successful:", response.data);
 
-      navigate("/"); // Redireccionar tras el éxito
+       // Redireccionar tras el éxito
       setShowSuccessModal(true);
 
       // Limpiar el formulario
@@ -114,9 +114,10 @@ const SignUpForm = () => {
 
       if (backendError.includes("Password")) {
         setPasswordBackError(true); // Corregido aquí
-      } else if (backendError.includes("2 results were returned")) {
+      } else if (backendError.includes("Email")) {
         setEmailBackError(true);
       }
+
     } finally {
       setLoading(false);
     }
@@ -237,11 +238,11 @@ const SignUpForm = () => {
               <button
                 onClick={() => {
                   setShowSuccessModal(false);
-                  navigate("/login");
+                  navigate("/");
                 }}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
-                OK
+Go to the login
               </button>
             </div>
           </div>

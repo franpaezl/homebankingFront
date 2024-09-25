@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import image from "../assets/frnlogo.png";
 import { useDispatch } from 'react-redux';
 import { logOut } from "../redux/actions/clientAcction";
+import { Link } from 'react-router-dom'
+
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -27,11 +29,13 @@ const Header = () => {
   return (
     <header className='flex flex-row justify-evenly items-center bg-[#93ABBF]'>
       <div className="w-[8%] my-[10px] flex flex-col items-center">
+      <Link to="/account">
         <img src={image} alt="Bank Icon" />
-        <h1 className='text-center text-[11px] mt-[-2px] font-bold text-gray-800 mt-2'>
+        <h1 className='text-center text-[11px] mt-[-2px] font-bold text-gray-800'>
         Federal Nation Bank
         </h1>
 
+      </Link>
       </div>
       <Navbar />
 
