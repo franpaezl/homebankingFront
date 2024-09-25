@@ -107,7 +107,7 @@ const LoansForm = () => {
     // Prepare loan data for confirmation
     const loanData = {
       id: selectedLoanId,
-      payment: selectedPayment,
+      payments: selectedPayment,
       amount: amount,
       accountNumber: accountSelected,
     };
@@ -120,6 +120,7 @@ const LoansForm = () => {
   const confirmLoan = () => {
     dispatch(solicitLoan(confirmationLoanData))
       .then(() => {
+        dispatch(loadClient)
         setShowConfirmModal(false);
         setShowSuccessModal(true);
         setNotificationOpacity(1);
@@ -142,7 +143,8 @@ const LoansForm = () => {
         console.error("Error submitting loan:", error);
         alert("There was an error submitting the loan. Please try again.");
         setShowConfirmModal(false); // Close confirmation modal on error
-      });
+      })
+      ;
   };
 
   return (

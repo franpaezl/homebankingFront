@@ -48,18 +48,24 @@ const TransactionsForms = () => {
   }
 
   function accountSelect(event) {
-    setAccountSelected(event.target.value);
+    const selectedAccount = event.target.value;
+    setAccountSelected(selectedAccount);
     setDestinationAccount("");
     setAmount(0); // Reset amount when selecting an account
+    setAccountError(false); // Clear error when changing account
   }
 
   function handleAmount(event) {
-    setAmount(event.target.value);
+    const value = event.target.value;
+    setAmount(value);
+    setAmountError(value <= 0);
+    setAmountExceedError(false); // Reset the error state
   }
 
   function handleDescription(event) {
-    setDescription(event.target.value);
-    descriptionError(false)
+    const value = event.target.value;
+    setDescription(value);
+    setDescriptionError(value.trim() === "");
   }
 
   function validateForm() {
@@ -103,6 +109,9 @@ const TransactionsForms = () => {
     setTimeout(() => {
       setNotificationOpacity(0);
     }, 3000);
+
+    // Reset form values to initial state after transaction
+    resetForm();
   }
 
   function submitTransaction(event) {
@@ -120,6 +129,28 @@ const TransactionsForms = () => {
     // Show modal confirmation
     setShowModal(true);
   }
+
+  // Reset form values to initial state
+  function resetForm() {
+    setDestinationType("own");
+    setAccountSelected("");
+    setAvailableAccounts([]);
+    setDestinationAccount("");
+    setAmount(0);
+    setDescription("");
+
+    setAccountError(false);
+    setDestinationAccountError(false);
+    setAmountError(false);
+    setDescriptionError(false);
+    setAmountExceedError(false);
+  }
+
+  useEffect(() => {
+    if (showSuccessNotification) {
+      resetForm(); // Reset form values when showing success notification
+    }
+  }, [showSuccessNotification]);
 
   return (
     <div className="w-[50%] bg-[#93ABBF] py-[40px]">
@@ -181,7 +212,7 @@ const TransactionsForms = () => {
               id="destination"
               onChange={(e) => {
                 setDestinationAccount(e.target.value);
-                setDestinationAccountError(false);
+                setDestinationAccountError(false); // Clear error when changing
               }}
               value={destinationAccount}
               className={`mt-1 w-full rounded-md border ${destinationAccountError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
@@ -206,7 +237,7 @@ const TransactionsForms = () => {
               name="otheraccount"
               onChange={(e) => {
                 setDestinationAccount(e.target.value);
-                setDestinationAccountError(false);
+                setDestinationAccountError(false); // Clear error when changing
               }}
               placeholder="Enter an account"
               className={`mt-1 w-full rounded-md border ${destinationAccountError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
@@ -220,51 +251,45 @@ const TransactionsForms = () => {
           <input
             type="number"
             id="amount"
-            name="amount"
-            placeholder="Enter amount"
-            className={`mt-1 w-full rounded-md border ${amountError || amountExceedError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
             value={amount}
             onChange={handleAmount}
+            className={`mt-1 w-full rounded-md border ${amountError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
           />
-          {amountError && <p className="text-red-500 text-sm">Please enter a valid amount greater than 0.</p>}
-          {amountExceedError && <p className="text-red-500 text-sm">Amount exceeds the available balance.</p>}
+          {amountError && <p className="text-red-500 text-sm">Please enter a valid amount.</p>}
+          {amountExceedError && <p className="text-red-500 text-sm">Amount exceeds available balance.</p>}
         </div>
 
         <div className="flex flex-col">
           <label htmlFor="description" className="font-semibold text-gray-700">Description</label>
-          <textarea
+          <input
+            type="text"
             id="description"
-            name="description"
-            placeholder="Enter transaction description"
-            className={`mt-1 w-full rounded-md border ${descriptionError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
-            rows="3"
             value={description}
             onChange={handleDescription}
+            className={`mt-1 w-full rounded-md border ${descriptionError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
           />
-          {descriptionError && <p className="text-red-500 text-sm">Please enter a description.</p>}
+          {descriptionError && <p className="text-red-500 text-sm">Description cannot be empty.</p>}
         </div>
 
-        <button type="submit" className="px-6 py-2 bg-[#023E73] text-white font-semibold rounded-lg shadow-md hover:bg-[#266288] focus:outline-none focus:ring-2 focus:ring-blue-400">
-          Submit Transaction
-        </button>
+        <button type="submit" className="mt-4 bg-blue-600 text-white rounded py-2">Submit</button>
       </form>
 
-      {/* Modal Confirmation */}
+      {/* Modal for confirmation */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6">
-            <h2 className="text-lg font-bold">Confirm Transaction</h2>
-            <p className="mt-2">Are you sure you want to make this transaction?</p>
-            <div className="flex justify-end mt-4">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded shadow-md">
+            <h3 className="text-lg font-semibold">Confirm Transaction</h3>
+            <p>Are you sure you want to proceed with this transaction?</p>
+            <div className="mt-4 flex justify-end">
               <button
+                className="bg-red-500 text-white rounded px-4 py-2"
                 onClick={() => setShowModal(false)}
-                className="mr-4 text-gray-500"
               >
                 Cancel
               </button>
               <button
+                className="ml-2 bg-green-500 text-white rounded px-4 py-2"
                 onClick={handleConfirmTransaction}
-                className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
               >
                 Confirm
               </button>
@@ -275,11 +300,9 @@ const TransactionsForms = () => {
 
       {/* Success Notification */}
       {showSuccessNotification && (
-        <div
-          className={`fixed bottom-0 right-0 m-4 p-4 bg-green-500 text-white rounded-md transition-opacity duration-300 ease-in-out`}
-          style={{ opacity: notificationOpacity }}
-        >
-          Transaction successful!
+        <div  className="fixed bottom-5 right-5 bg-green-500 text-white p-4 rounded shadow-lg transition-opacity duration-500"
+        style={{ opacity: notificationOpacity }}>
+          Transaction completed successfully!
         </div>
       )}
     </div>
