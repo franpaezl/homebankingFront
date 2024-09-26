@@ -49,6 +49,8 @@ const initialState = {
   },
   status: "idle",
   error: null,
+
+  statusModalOpen: false
 };
 
 export const clientReducer = createReducer(initialState, (builder) => {
@@ -79,9 +81,11 @@ export const clientReducer = createReducer(initialState, (builder) => {
     })
     .addCase(solicitTransaction.fulfilled, (state) => {
       state.status = "success";
+      state.statusModalOpen = false;
     })
     .addCase(solicitTransaction.rejected, (state, action) => {
       state.status = "failed";
+      state.statusModalOpen = true;
       state.error = action.payload;
     })
     .addCase(solicitLoan.pending, (state) => {
@@ -106,6 +110,7 @@ export const clientReducer = createReducer(initialState, (builder) => {
       state.status = "failed";
       state.error = action.payload;
     })
+
     .addCase(logOut, (state) => {
       state.client = initialState.client;
     });

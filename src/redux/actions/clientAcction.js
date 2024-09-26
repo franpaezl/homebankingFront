@@ -106,7 +106,10 @@ export const solicitTransaction = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log(error);
+
       return rejectWithValue(error.response ? error.response.data : "Unknown error");
     }
   }
 );
+
+

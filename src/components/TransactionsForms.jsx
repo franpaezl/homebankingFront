@@ -10,12 +10,18 @@ const TransactionsForms = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
   const client = useSelector((store) => store.clientReducer.client);
+  const errorBack = useSelector((store)=> store.clientReducer.error)
+  const state = useSelector((store)=> store.clientReducer.statusModalOpen)
+
   const [destinationType, setDestinationType] = useState("own");
   const [accountSelected, setAccountSelected] = useState("");
   const [availableAccounts, setAvailableAccounts] = useState([]);
   const [destinationAccount, setDestinationAccount] = useState("");
   const [amount, setAmount] = useState(0);
   const [description, setDescription] = useState("");
+  const [backendError, setBackendError] = useState(false)
+  const [status, setStatus] = useState(false)
+
 
   const [accountError, setAccountError] = useState(false);
   const [destinationAccountError, setDestinationAccountError] = useState(false);
@@ -27,6 +33,12 @@ const TransactionsForms = () => {
   const [showModal, setShowModal] = useState(false);
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [notificationOpacity, setNotificationOpacity] = useState(1);
+
+
+console.log(errorBack);
+console.log(status);
+
+
 
   useEffect(() => {
     if (client.firstName === "") {
@@ -69,13 +81,11 @@ const TransactionsForms = () => {
     setAccountError(false); // Clear error when changing account
   }
 
-  const formatNumber = (value) => {
-    return value.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-  };
+
 
   function handleAmount(event) {
-    const inputValue = event.target.value;
-    setAmount(formatNumber(inputValue));
+    const value = event.target.value.replace(/\D/g, '');
+    setAmount(value);
     setAmountError(value <= 0);
     setAmountExceedError(false); // Reset the error state
   }
@@ -104,13 +114,14 @@ const TransactionsForms = () => {
       isValid = false;
     }
 
+
     if (!accountSelected || !destinationAccount || amount <= 0 || description.trim() === "") {
       isValid = false;
     }
     return isValid;
   }
 
-  function handleConfirmTransaction() {
+   function handleConfirmTransaction() {
     const transactionData = {
       originAccount: accountSelected,
       destinationAccount: destinationAccount,
@@ -118,22 +129,43 @@ const TransactionsForms = () => {
       description: description,
     };
 
-    dispatch(solicitTransaction(transactionData));
-    dispatch(loadClient());
+      dispatch(solicitTransaction(transactionData)).unwrap().then(()=>{
+        setShowSuccessNotification(true);
+        setShowModal(false);
+        setStatus(false)
+        resetForm();
+      }).catch(()=>{
+        setStatus(true)
+      })
+    //  if(status == "success"){
+    //   // Cargar los datos del cliente después de la transacción
+    //   dispatch(loadClient());
+
+    //   console.log("Transacción exitosa");
+
+    //   setShowSuccessNotification(true);
+    //   setShowModal(false);
+    //   setBackendError(false);
 
 
-    setShowSuccessNotification(true);
-    setShowModal(false);
+    //   // Ocultar la notificación después de 3 segundos
+    //   setTimeout(() => {
+    //     setNotificationOpacity(0);
+    //   }, 3000);
 
-    // Hide notification after 3 seconds
-    setTimeout(() => {
-      setNotificationOpacity(0);
-    }, 3000);
+    //   // Reiniciar los valores del formulario a su estado inicial después de la transacción
+    //   resetForm();
+    // }
+    // else if(status == "failed") {
+    //   setBackendError(true);
+    //   setShowSuccessNotification(false)
+    //   setShowModal(false)
 
-    // Reset form values to initial state after transaction
-    resetForm();
-  }
 
+
+    // };
+
+    }
   function submitTransaction(event) {
     event.preventDefault();
 
@@ -148,6 +180,12 @@ const TransactionsForms = () => {
 
     // Show modal confirmation
     setShowModal(true);
+  }
+
+  function errorClose(){
+    setShowSuccessNotification(false);
+    setShowModal(false);
+    setStatus(false)
   }
 
   // Reset form values to initial state
@@ -263,6 +301,7 @@ const TransactionsForms = () => {
               className={`mt-1 w-full rounded-md border  py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
             />
             {destinationAccountError && <p className="text-red-500 text-sm">Please enter a valid account alias or CVU.</p>}
+
           </div>
         )}
 
@@ -271,7 +310,7 @@ const TransactionsForms = () => {
           <input
             type="number"
             id="amount"
-            value={amount}
+            value={Number(amount).toLocaleString()}
             onChange={handleAmount}
             className={`mt-1 w-full rounded-md border  py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
           />
@@ -317,7 +356,24 @@ const TransactionsForms = () => {
           </div>
         </div>
       )} */}
-      {showModal && (<ConfirmationModal h3="Confirm Transaction" p="Are you sure you want to proceed with this transaction?" cancel={()=> setShowModal(false)} confirm={handleConfirmTransaction} />)}
+      {showModal == true && (<ConfirmationModal h3="Confirm Transaction" p="Are you sure you want to proceed with this transaction?" cancel={()=> setShowModal(false)} confirm={handleConfirmTransaction} />)}
+
+      {status && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-75">
+        <div className="bg-white p-4 rounded shadow-md max-w-sm w-full">
+          <h3 className="text-lg font-semibold text-red-600">Error</h3>
+          <p className="text-gray-700 mt-2">The Destination account entered does not exist.</p>
+          <div className="mt-4 flex justify-end">
+            <button
+              className="bg-red-500 text-white rounded px-4 py-2"
+              onClick={errorClose}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+      )}
 
 
       {/* Success Notification */}
