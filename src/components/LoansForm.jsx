@@ -143,10 +143,7 @@ const LoansForm = () => {
         setErrors({});
 
         // Hide success modal after 3 seconds
-        setTimeout(() => {
-          setNotificationOpacity(0);
-          setShowSuccessModal(false);
-        }, 3000);
+
       })
       .catch((error) => {
         console.error("Error submitting loan:", error);
