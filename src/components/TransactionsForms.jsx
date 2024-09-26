@@ -69,9 +69,13 @@ const TransactionsForms = () => {
     setAccountError(false); // Clear error when changing account
   }
 
+  const formatNumber = (value) => {
+    return value.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+  };
+
   function handleAmount(event) {
-    const value = event.target.value;
-    setAmount(value);
+    const inputValue = event.target.value;
+    setAmount(formatNumber(inputValue));
     setAmountError(value <= 0);
     setAmountExceedError(false); // Reset the error state
   }
@@ -267,7 +271,7 @@ const TransactionsForms = () => {
           <input
             type="number"
             id="amount"
-            value={Number(amount).toLocaleString()}
+            value={amount}
             onChange={handleAmount}
             className={`mt-1 w-full rounded-md border  py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
           />
