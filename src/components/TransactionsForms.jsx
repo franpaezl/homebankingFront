@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { loadClient, solicitTransaction } from "../redux/actions/clientAcction";
 import { useNavigate } from "react-router-dom";
+import ConfirmationModal from "./ConfirmationModal"
+import SuccesModal from "./SuccesModal";
+
 
 const TransactionsForms = () => {
   const navigate = useNavigate()
@@ -30,6 +33,15 @@ const TransactionsForms = () => {
       dispatch(loadClient());
     }
   }, [client]);
+
+  function handleAmount(event) {
+    const value = event.target.value.replace(/,/g, ''); // Elimina comas para mantener el número limpio
+    setAmount(value);
+
+    // Validamos que sea mayor a 0 y actualizamos el error de cantidad si es necesario
+    setAmountError(value <= 0);
+    setAmountExceedError(false); // Reseteamos el estado de error
+  }
 
   useEffect(() => {
     if (destinationType === "own") {
@@ -104,7 +116,7 @@ const TransactionsForms = () => {
 
     dispatch(solicitTransaction(transactionData));
     dispatch(loadClient());
-    navigate("/account")
+
 
     setShowSuccessNotification(true);
     setShowModal(false);
@@ -196,7 +208,7 @@ const TransactionsForms = () => {
             id="origen"
             onChange={accountSelect}
             value={accountSelected}
-            className={`mt-1 w-full rounded-md border ${accountError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
+            className={`mt-1 w-full rounded-md border  py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
           >
             <option value="" disabled>Select an account</option>
             {client?.accounts?.map((account) => (
@@ -219,7 +231,7 @@ const TransactionsForms = () => {
                 setDestinationAccountError(false); // Clear error when changing
               }}
               value={destinationAccount}
-              className={`mt-1 w-full rounded-md border ${destinationAccountError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
+              className={`mt-1 w-full rounded-md border  py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
             >
               <option value="" disabled>Select Destination Account</option>
               {availableAccounts.map((account) => (
@@ -244,7 +256,7 @@ const TransactionsForms = () => {
                 setDestinationAccountError(false); // Clear error when changing
               }}
               placeholder="Enter an account"
-              className={`mt-1 w-full rounded-md border ${destinationAccountError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
+              className={`mt-1 w-full rounded-md border  py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
             />
             {destinationAccountError && <p className="text-red-500 text-sm">Please enter a valid account alias or CVU.</p>}
           </div>
@@ -255,9 +267,9 @@ const TransactionsForms = () => {
           <input
             type="number"
             id="amount"
-            value={amount}
+            value={Number(amount).toLocaleString()}
             onChange={handleAmount}
-            className={`mt-1 w-full rounded-md border ${amountError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
+            className={`mt-1 w-full rounded-md border  py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
           />
           {amountError && <p className="text-red-500 text-sm">Please enter a valid amount.</p>}
           {amountExceedError && <p className="text-red-500 text-sm">Amount exceeds available balance.</p>}
@@ -270,16 +282,16 @@ const TransactionsForms = () => {
             id="description"
             value={description}
             onChange={handleDescription}
-            className={`mt-1 w-full rounded-md border ${descriptionError ? 'border-red-500' : 'border-gray-300'} py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
+            className={`mt-1 w-full rounded-md border  py-2 px-3 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500`}
           />
           {descriptionError && <p className="text-red-500 text-sm">Description cannot be empty.</p>}
         </div>
 
-        <button type="submit" className="mt-4 bg-blue-600 text-white rounded py-2">Submit</button>
+        <button type="submit" className="px-6 py-2 bg-[#023E73] text-white font-semibold rounded-lg shadow-md hover:bg-[#266288] focus:outline-none focus:ring-2 focus:ring-blue-400">Make Transaction</button>
       </form>
 
       {/* Modal for confirmation */}
-      {showModal && (
+      {/* {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white p-4 rounded shadow-md">
             <h3 className="text-lg font-semibold">Confirm Transaction</h3>
@@ -300,17 +312,18 @@ const TransactionsForms = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
+      {showModal && (<ConfirmationModal h3="Confirm Transaction" p="Are you sure you want to proceed with this transaction?" cancel={()=> setShowModal(false)} confirm={handleConfirmTransaction} />)}
+
 
       {/* Success Notification */}
       {showSuccessNotification && (
-        <div  className="fixed bottom-5 right-5 bg-green-500 text-white p-4 rounded shadow-lg transition-opacity duration-500"
-        style={{ opacity: notificationOpacity }}>
-          Transaction completed successfully!
-        </div>
+        <SuccesModal h2="Transaction completed!" navigate={() => {navigate("/account");}} textButton="Go check your accounts."/>
       )}
     </div>
   );
 };
 
 export default TransactionsForms;
+
+

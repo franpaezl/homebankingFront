@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { solicitCard, loadClient } from "../redux/actions/clientAcction";
+import ConfirmationModal from "./ConfirmationModal";
+import SuccesModal from "./SuccesModal";
+import { useNavigate } from "react-router-dom";
 
 const CardForm = () => {
   const [cardType, setCardType] = useState("");
@@ -16,6 +19,7 @@ const CardForm = () => {
   const client = useSelector((store) => store.clientReducer.client);
   const clientCards = client.cards || [];
   const dispatch = useDispatch();
+  const navigate = useNavigate()
 
   const cardRequested = {
     cardType,
@@ -141,41 +145,12 @@ const CardForm = () => {
       </form>
 
       {/* Confirm Modal */}
-      {showConfirmModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl mb-4">Are you sure you want to request this card?</h2>
-            <div className="flex justify-end">
-              <button
-                onClick={() => {
-                  setShowConfirmModal(false);
-                  requestCard();
-                }}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                Yes
-              </button>
-              <button
-                onClick={() => setShowConfirmModal(false)}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 ml-2"
-              >
-                No
-              </button>
-            </div>
-          </div>
-        </div>
+      {showConfirmModal && (<ConfirmationModal h3="Confirm create card" p="Are you sure you want to create this credit card?" confirm={() => { setShowConfirmModal(false); requestCard()}} cancel={() => setShowConfirmModal(false)}/>
       )}
 
       {/* Success Notification */}
       {showNotification && (
-        <div
-          className="fixed bottom-5 right-5 bg-green-500 text-white p-4 rounded shadow-lg transition-opacity duration-500"
-          style={{ opacity: notificationOpacity }}
-          role="alert"
-          aria-live="polite"
-        >
-          Card request submitted successfully!
-        </div>
+        <SuccesModal h2="Card application approved!" navigate={() => {navigate("/cards");}} textButton="Go check your cards."/>
       )}
     </div>
   );

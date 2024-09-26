@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import SuccesModal from "./SuccesModal";
 
 const SignUpForm = () => {
   const [firstName, setFirstName] = useState("");
@@ -230,7 +231,7 @@ const SignUpForm = () => {
       </form>
 
       {/* Modal de éxito */}
-      {showSuccessModal && (
+      {/* {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-xl mb-4">Client registered successfully!</h2>
@@ -247,7 +248,10 @@ Go to the login
             </div>
           </div>
         </div>
-      )}
+      )} */}
+      {showSuccessModal && (<SuccesModal h2="Client registered successfully!" navigate={() => {setShowSuccessModal(false);navigate("/");}} textButton="Go to the login
+"/>)}
+
     </div>
   );
 };

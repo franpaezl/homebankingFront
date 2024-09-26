@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { loadClient, solicitLoan } from "../redux/actions/clientAcction";
 import { useNavigate } from "react-router-dom";
+import SuccesModal from "./SuccesModal";
 
 const LoansForm = () => {
   const dispatch = useDispatch();
@@ -96,7 +97,11 @@ const LoansForm = () => {
     const newErrors = {};
     if (!loanSelected) newErrors.loanSelected = "Please select a loan type.";
     if (!accountSelected) newErrors.accountSelected = "Please select an account.";
-    if (!amount) newErrors.amount = "Please enter an amount.";
+    if (!amount) {
+      newErrors.amount = "Please enter an amount.";
+    } else if (amount > maxAmount) {
+      newErrors.amount = `The amount cannot exceed the maximum of $${maxAmount}.`;
+    }
     if (!selectedPayment) newErrors.selectedPayment = "Please select the number of payments.";
     if (clientLoans.some((loan) => loan.name === loanSelected)) newErrors.loanExists = "You already have this loan.";
     setErrors(newErrors);
@@ -123,7 +128,6 @@ const LoansForm = () => {
   const confirmLoan = () => {
     dispatch(solicitLoan(confirmationLoanData))
       .then(() => {
-        navigate("/account")
         dispatch(loadClient())
         setShowConfirmModal(false);
         setShowSuccessModal(true);
@@ -180,7 +184,7 @@ const LoansForm = () => {
 
         <div className="flex flex-col">
           <label htmlFor="amount" className="font-semibold text-gray-700">Amount</label>
-          <input type="number" max={maxAmount} placeholder={`Max amount: $${maxAmount}`} id="amount" name="amount" value={amount} onChange={handleAmountChange} className="mt-1 w-full rounded-md py-2 px-3 text-gray-900 bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500" />
+          <input type="number" placeholder={`Max amount: $${maxAmount}`} id="amount" name="amount" value={amount} onChange={handleAmountChange} className="mt-1 w-full rounded-md py-2 px-3 text-gray-900 bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500" />
           {errors.amount && <p className="text-red-600">{errors.amount}</p>}
         </div>
 
@@ -196,11 +200,11 @@ const LoansForm = () => {
         </div>
 
         {errors.loanExists && <p className="text-red-600">{errors.loanExists}</p>}
-        <button type="submit" className="mt-4 w-full rounded-md bg-indigo-600 py-2 text-white hover:bg-indigo-700 focus:outline-none">Submit</button>
+        <button type="submit" className="px-6 py-2 bg-[#023E73] text-white font-semibold rounded-lg shadow-md hover:bg-[#266288] focus:outline-none focus:ring-2 focus:ring-blue-400">Make a loan</button>
       </form>
 
       {/* Confirmation Modal */}
-      {showConfirmModal && (
+      {/* {showConfirmModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-1/3">
             <h2 className="text-lg font-semibold">Confirm Loan Request</h2>
@@ -211,17 +215,13 @@ const LoansForm = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
+      {showConfirmModal && (<ConfirmationModal h3="Confirm Loan" p="Are you sure you want to request this loan?" cancel={() => setShowConfirmModal(false)} confirm={confirmLoan} />)}
 
       {/* Success Notification */}
       {showSuccessModal && (
-        <div
-          className="fixed bottom-0 right-0 m-4 p-4 bg-green-500 text-white rounded-md transition-opacity duration-300 ease-in-out"
-          style={{ opacity: notificationOpacity }}
-        >
-          Transaction Successful!
-        </div>
-      )}
+
+      <SuccesModal h2="Loan approved!" navigate={() => {navigate("/account");}} textButton="Go check your accounts."/>)}
     </div>
   );
 };
