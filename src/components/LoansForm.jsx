@@ -4,6 +4,7 @@ import axios from "axios";
 import { loadClient, solicitLoan } from "../redux/actions/clientAcction";
 import { useNavigate } from "react-router-dom";
 import SuccesModal from "./SuccesModal";
+import ConfirmationModal from "./ConfirmationModal"
 
 const LoansForm = () => {
   const dispatch = useDispatch();
