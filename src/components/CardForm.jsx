@@ -91,7 +91,7 @@ const CardForm = () => {
   return (
     <div className="w-full h-full bg-[#93ABBF] flex">
       <form className="flex flex-col gap-4 justify-center items-center w-full" onSubmit={handleSubmit}>
-        <h2 className="text-2xl font-bold text-gray-800">Solicit Card</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Request Card</h2>
         <div className="flex flex-col w-full items-center">
         <label htmlFor="cardType" className="font-semibold text-gray-700">
           Select Card Type

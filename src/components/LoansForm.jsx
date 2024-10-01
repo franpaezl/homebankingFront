@@ -182,7 +182,7 @@ const LoansForm = () => {
 
         <div className="flex flex-col">
           <label htmlFor="amount" className="font-semibold text-gray-700">Amount</label>
-          <input type="number" placeholder={`Max amount: $${maxAmount}`} id="amount" name="amount" value={Number(amount).toLocaleString()} onChange={handleAmountChange} className="mt-1 w-full rounded-md py-2 px-3 text-gray-900 bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500" />
+          <input type="number" placeholder={`Max amount: $${maxAmount.toLocaleString()}`} id="amount" name="amount" value={Number(amount).toLocaleString()} onChange={handleAmountChange} className="mt-1 w-full rounded-md py-2 px-3 text-gray-900 bg-white border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500" />
           {errors.amount && <p className="text-red-600">{errors.amount}</p>}
         </div>
 

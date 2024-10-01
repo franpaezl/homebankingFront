@@ -140,7 +140,7 @@ const SignUpForm = () => {
             name="firstName"
             value={firstName}
             onChange={handleFirstNameChange}
-            className={`w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${
+            className={`px-[10px] w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${
               firstNameError ? "border-red-500" : "border-gray-300"
             }`}
           />
@@ -159,7 +159,7 @@ const SignUpForm = () => {
             name="lastName"
             value={lastName}
             onChange={handleLastNameChange}
-            className={`w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${
+            className={`px-[10px] w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${
               lastNameError ? "border-red-500" : "border-gray-300"
             }`}
           />
@@ -178,7 +178,7 @@ const SignUpForm = () => {
             name="email"
             value={email}
             onChange={handleEmailChange}
-            className={`w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${
+            className={`px-[10px] w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${
               emailError ? "border-red-500" : "border-gray-300"
             }`}
           />
@@ -207,7 +207,7 @@ const SignUpForm = () => {
             name="password"
             value={password}
             onChange={handlePasswordChange}
-            className={`w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${
+            className={`px-[10px] w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm ${
               passwordError ? "border-red-500" : "border-gray-300"
             }`}
           />

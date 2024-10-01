@@ -96,7 +96,7 @@ const SignInInput = () => {
           name="mail"
           value={email}
           onChange={handleEmailChange}
-          className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
+          className="px-[10px] w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
         />
         {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
         </div>
@@ -109,7 +109,7 @@ const SignInInput = () => {
           name="password"
           value={password}
           onChange={handlePasswordChange}
-          className="w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
+          className="px-[10px] w-[80%] rounded-md border-black py-1.5 pe-10 shadow-sm sm:text-sm"
           />
         {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
         {backendError && <p className="text-red-500 text-sm">{backendError}</p>}
