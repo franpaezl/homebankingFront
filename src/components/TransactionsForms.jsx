@@ -255,10 +255,13 @@ console.log(status);
             <option value="" disabled>Select an account</option>
             {client?.accounts?.map((account) => (
               <option key={account.id} value={account.accountNumber}>
-                {account.accountNumber}
+                {account.accountNumber} (${account.balance.toLocaleString()})
               </option>
             ))}
           </select>
+
+
+
           {accountError && <p className="text-red-500 text-sm">Please select an origin account.</p>}
         </div>
 
@@ -308,7 +311,7 @@ console.log(status);
         <div className="flex flex-col">
           <label htmlFor="amount" className="font-semibold text-gray-700">Amount</label>
           <input
-            type="number"
+            type="text"
             id="amount"
             value={Number(amount).toLocaleString()}
             onChange={handleAmount}
